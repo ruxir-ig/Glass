@@ -26,6 +26,7 @@ if [[ -n $apt ]]; then
     libfontconfig-dev
     libgit2-dev
     libglib2.0-dev
+    libx11-dev
     libssl-dev
     libva-dev
     libvulkan1
@@ -101,6 +102,7 @@ if [[ -n $dnf ]] || [[ -n $yum ]]; then
     alsa-lib-devel
     fontconfig-devel
     glib2-devel
+    libX11-devel
     libva-devel
     wayland-devel
     libxcb-devel
@@ -204,6 +206,7 @@ if [[ -n $pacman ]]; then
     alsa-lib
     fontconfig
     glib2
+    libx11
     libva
     wayland
     libgit2
@@ -237,6 +240,7 @@ if [[ -n $xbps ]]; then
     alsa-lib-devel
     fontconfig-devel
     glib-devel
+    libX11-devel
     libva-devel
     libxcb-devel
     libxkbcommon-devel
@@ -268,6 +272,7 @@ if [[ -n $emerge ]]; then
     media-libs/fontconfig
     media-libs/libva
     media-libs/vulkan-loader
+    x11-libs/libX11
     x11-libs/libxcb
     x11-libs/libxkbcommon
     dev-db/sqlite

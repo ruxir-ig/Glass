@@ -45,6 +45,7 @@ To launch Glass itself against a local GPUI checkout on Windows, use [`script/se
 
 ### Building Glass
 
+- [Building for Linux](./docs/src/development/linux.md)
 - [Building for macOS](./docs/src/development/macos.md)
 - [Building for Windows](./docs/src/development/windows.md)
 

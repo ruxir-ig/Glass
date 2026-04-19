@@ -1,13 +1,13 @@
 ---
-title: Building Zed for Linux
-description: "Guide to building zed for linux for Zed development."
+title: Building Glass for Linux
+description: "Guide to building Glass for Linux development."
 ---
 
-# Building Zed for Linux
+# Building Glass for Linux
 
 ## Repository
 
-Clone the [Zed repository](https://github.com/zed-industries/zed).
+Clone the [Glass repository](https://github.com/Glass-HQ/Glass) (or your fork).
 
 ## Dependencies
 
@@ -21,14 +21,16 @@ Clone the [Zed repository](https://github.com/zed-industries/zed).
 
   If you prefer to install the system libraries manually, you can find the list of required packages in the `script/linux` file.
 
+  `script/linux` includes Arch-based distributions (including CachyOS) and installs both Wayland and X11 development dependencies needed for a full Linux build.
+
 ## Building from source
 
-Once the dependencies are installed, you can build Zed using [Cargo](https://doc.rust-lang.org/cargo/).
+Once the dependencies are installed, you can build Glass using [Cargo](https://doc.rust-lang.org/cargo/).
 
 For a debug build of the editor:
 
 ```sh
-cargo run
+./run-glass.sh debug
 ```
 
 And to run the tests:
@@ -80,7 +82,19 @@ This builds `zed` and the `cli` in release mode, installs the binary at `~/.loca
 
 ## Wayland & X11
 
-Zed supports both X11 and Wayland. By default, we pick whichever we can find at runtime. If you're on Wayland and want to run in X11 mode, use the environment variable `WAYLAND_DISPLAY=''`.
+Glass supports both X11 and Wayland. By default, we pick whichever we can find at runtime.
+
+For Wayland-first behavior on Linux:
+
+```sh
+XDG_SESSION_TYPE=wayland ./run-glass.sh debug
+```
+
+If you're on Wayland and want to run in X11 mode, use:
+
+```sh
+WAYLAND_DISPLAY='' ./run-glass.sh debug
+```
 
 ## Notes for packaging Zed
 
