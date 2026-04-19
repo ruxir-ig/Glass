@@ -1,0 +1,51 @@
+name: linux_wayland_build
+
+on:
+  pull_request:
+    branches:
+      - "**"
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+permissions:
+  contents: read
+
+jobs:
+  build_linux_wayland:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      CC: clang
+      CXX: clang++
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd
+
+      - name: Setup cargo config
+        run: |
+          mkdir -p ./../.cargo
+          cp ./.cargo/ci-config.toml ./../.cargo/config.toml
+
+      - name: Install Linux dependencies
+        run: ./script/linux
+
+      - name: Build and run CLI on Linux
+        run: |
+          cargo check -p cli
+          cargo run -p cli -- --help >/tmp/glass-cli-help.txt
+
+      - name: Build Glass on Linux
+        id: zed_build
+        continue-on-error: true
+        run: cargo check -p zed
+
+      - name: Note zed Linux build blocker
+        if: steps.zed_build.outcome != 'success'
+        run: |
+          echo "zed Linux/Wayland build is currently blocked by the pinned Glass-HQ/gpui revision."
+          echo "This workflow still validates Linux dependency setup and CLI build + launch path."

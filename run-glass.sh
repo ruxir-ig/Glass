@@ -5,8 +5,11 @@
 
 set -euo pipefail
 
-BUILD_TYPE="${1:-debug}"
-CEF_PATH="${CEF_PATH:-$HOME/.local/share/cef}"
+BUILD_TYPE="debug"
+if [[ "${1:-}" == "debug" || "${1:-}" == "release" ]]; then
+    BUILD_TYPE="$1"
+    shift
+fi
 
 # Get architecture
 version_info=$(rustc --version --verbose)
@@ -16,32 +19,51 @@ target_triple=${host_line#*: }
 # Determine paths based on build type
 if [[ "$BUILD_TYPE" == "release" ]]; then
     TARGET_DIR="release"
-    BUILD_FLAG="--release"
 else
     TARGET_DIR="debug"
-    BUILD_FLAG=""
     export CARGO_INCREMENTAL=true
 fi
 
-APP_PATH="target/${target_triple}/${TARGET_DIR}/bundle/Glass.app"
+platform=$(uname -s)
 
-# Check if we need to rebuild/rebundle
-NEEDS_BUNDLE=false
+if [[ "$platform" == "Darwin" ]]; then
+    CEF_PATH="${CEF_PATH:-$HOME/.local/share/cef}"
+    APP_PATH="target/${target_triple}/${TARGET_DIR}/bundle/Glass.app"
 
-if [[ ! -d "$APP_PATH" ]]; then
-    NEEDS_BUNDLE=true
-elif [[ ! -d "$APP_PATH/Contents/Frameworks/Chromium Embedded Framework.framework" ]]; then
-    NEEDS_BUNDLE=true
+    # Check if we need to rebuild/rebundle
+    NEEDS_BUNDLE=false
+
+    if [[ ! -d "$APP_PATH" ]]; then
+        NEEDS_BUNDLE=true
+    elif [[ ! -d "$APP_PATH/Contents/Frameworks/Chromium Embedded Framework.framework" ]]; then
+        NEEDS_BUNDLE=true
+    fi
+
+    if [[ "$NEEDS_BUNDLE" == "true" ]]; then
+        echo "Building and bundling Glass with CEF..."
+        ./script/bundle-mac-cef "$BUILD_TYPE"
+    fi
+
+    # Set remote server path for development
+    export ZED_COPY_REMOTE_SERVER="$PWD/target/${target_triple}/${TARGET_DIR}/remote_server.gz"
+
+    # Run the bundled app
+    echo "Running Glass from: $APP_PATH"
+    exec "$APP_PATH/Contents/MacOS/Glass" "$@"
+elif [[ "$platform" == "Linux" ]]; then
+    export ZED_COPY_REMOTE_SERVER="$PWD/target/${target_triple}/${TARGET_DIR}/remote_server.gz"
+
+    if [[ "${XDG_SESSION_TYPE:-}" == "wayland" && -z "${WINIT_UNIX_BACKEND:-}" ]]; then
+        export WINIT_UNIX_BACKEND=wayland
+    fi
+
+    echo "Running Glass on Linux via cargo run (build: $BUILD_TYPE)"
+    if [[ "$BUILD_TYPE" == "release" ]]; then
+        exec cargo run -p zed --release -- "$@"
+    else
+        exec cargo run -p zed -- "$@"
+    fi
 fi
 
-if [[ "$NEEDS_BUNDLE" == "true" ]]; then
-    echo "Building and bundling Glass with CEF..."
-    ./script/bundle-mac-cef "$BUILD_TYPE"
-fi
-
-# Set remote server path for development
-export ZED_COPY_REMOTE_SERVER="$PWD/target/${target_triple}/${TARGET_DIR}/remote_server.gz"
-
-# Run the bundled app
-echo "Running Glass from: $APP_PATH"
-exec "$APP_PATH/Contents/MacOS/Glass" "$@"
+echo "Unsupported platform: $platform"
+exit 1
