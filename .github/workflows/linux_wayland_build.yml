@@ -38,9 +38,9 @@ jobs:
         run: cargo check -p zed
 
       - name: Verify Linux launch path (Wayland env)
-        run: XDG_SESSION_TYPE=wayland cargo run -p zed -- --printenv >/tmp/glass-printenv.json
+        run: XDG_SESSION_TYPE=wayland cargo run -p zed -- --system-specs >/tmp/glass-system-specs.txt
 
       - name: Validate launch output
         run: |
-          test -s /tmp/glass-printenv.json
-          jq -e 'type == "object"' /tmp/glass-printenv.json >/dev/null
+          test -s /tmp/glass-system-specs.txt
+          grep -q "System Specs" /tmp/glass-system-specs.txt

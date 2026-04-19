@@ -19,10 +19,8 @@ target_triple=${host_line#*: }
 # Determine paths based on build type
 if [[ "$BUILD_TYPE" == "release" ]]; then
     TARGET_DIR="release"
-    BUILD_FLAG="--release"
 else
     TARGET_DIR="debug"
-    BUILD_FLAG=""
     export CARGO_INCREMENTAL=true
 fi
 
@@ -60,7 +58,10 @@ elif [[ "$platform" == "Linux" ]]; then
     fi
 
     echo "Running Glass on Linux via cargo run (build: $BUILD_TYPE)"
-    exec cargo run -p zed $BUILD_FLAG -- "$@"
+    if [[ "$BUILD_TYPE" == "release" ]]; then
+        exec cargo run -p zed --release -- "$@"
+    fi
+    exec cargo run -p zed -- "$@"
 fi
 
 echo "Unsupported platform: $platform"
