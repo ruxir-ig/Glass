@@ -12,6 +12,9 @@ on:
 env:
   CARGO_TERM_COLOR: always
 
+permissions:
+  contents: read
+
 jobs:
   build_linux_wayland:
     runs-on: ubuntu-24.04
@@ -36,3 +39,8 @@ jobs:
 
       - name: Verify Linux launch path (Wayland env)
         run: XDG_SESSION_TYPE=wayland cargo run -p zed -- --printenv >/tmp/glass-printenv.json
+
+      - name: Validate launch output
+        run: |
+          test -s /tmp/glass-printenv.json
+          jq -e 'type == "object"' /tmp/glass-printenv.json >/dev/null
