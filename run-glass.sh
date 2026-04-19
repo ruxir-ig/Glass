@@ -60,8 +60,9 @@ elif [[ "$platform" == "Linux" ]]; then
     echo "Running Glass on Linux via cargo run (build: $BUILD_TYPE)"
     if [[ "$BUILD_TYPE" == "release" ]]; then
         exec cargo run -p zed --release -- "$@"
+    else
+        exec cargo run -p zed -- "$@"
     fi
-    exec cargo run -p zed -- "$@"
 fi
 
 echo "Unsupported platform: $platform"
