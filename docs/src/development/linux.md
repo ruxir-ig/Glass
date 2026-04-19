@@ -98,11 +98,11 @@ WAYLAND_DISPLAY='' ./run-glass.sh debug
 
 ## Notes for packaging Glass
 
-This section is for distribution maintainers packaging Zed.
+This section is for distribution maintainers packaging Glass.
 
 ### Technical requirements
 
-Zed has two main binaries:
+Glass has two main binaries:
 
 - You will need to build `crates/cli` and make its binary available in `$PATH` with the name `zed`.
 - You will need to build `crates/zed` and put it at `$PATH/to/cli/../../libexec/zed-editor`. For example, if you are going to put the cli at `~/.local/bin/zed` put zed at `~/.local/libexec/zed-editor`. As some linux distributions (notably Arch) discourage the use of `libexec`, you can also put this binary at `$PATH/to/cli/../../lib/zed/zed-editor` (e.g. `~/.local/lib/zed/zed-editor`) instead.
