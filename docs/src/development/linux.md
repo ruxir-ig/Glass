@@ -96,7 +96,7 @@ If you're on Wayland and want to run in X11 mode, use:
 WAYLAND_DISPLAY='' ./run-glass.sh debug
 ```
 
-## Notes for packaging Zed
+## Notes for packaging Glass
 
 This section is for distribution maintainers packaging Zed.
 
